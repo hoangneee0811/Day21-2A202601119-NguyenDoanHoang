@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/laragon/www/Day21Vinuni/Day21-2A202601119-NguyenDoanHoang/mlruns/0/6d8a1535f8fb4d58aefaa66d1b094e38/artifacts
+end_time: 1787285452450
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 6d8a1535f8fb4d58aefaa66d1b094e38
+run_name: defiant-pig-674
+run_uuid: 6d8a1535f8fb4d58aefaa66d1b094e38
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1787285449204
+status: 3
+tags: []
+user_id: hoang

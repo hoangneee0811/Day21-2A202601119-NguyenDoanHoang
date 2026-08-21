@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/laragon/www/Day21Vinuni/Day21-2A202601119-NguyenDoanHoang/mlruns/0/c5a5bc54536649c8bf037c1a44887862/artifacts
+end_time: 1787285138327
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c5a5bc54536649c8bf037c1a44887862
+run_name: languid-wasp-943
+run_uuid: c5a5bc54536649c8bf037c1a44887862
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1787285134054
+status: 3
+tags: []
+user_id: hoang

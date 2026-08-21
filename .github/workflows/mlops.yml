@@ -32,7 +32,7 @@ jobs:
 
       - name: Run unit tests
         # TODO 1: Viet lenh de chay pytest tren thu muc tests/ voi co -v
-        run: # <dien lenh o day>
+        run: pytest tests/ -v
 
 
   # ---------------------------------------------------------------------------
@@ -51,26 +51,22 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
-        with:
+         with:
           python-version: "3.10"
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Authenticate to Cloud Storage
-        # TODO 2: Ghi noi dung credentials ra file tam va set bien moi truong xac thuc.
-        # GCP:   echo '${{ secrets.CLOUD_CREDENTIALS }}' > /tmp/sa-key.json
-        #        echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa-key.json" >> $GITHUB_ENV
-        # AWS:   echo "AWS_ACCESS_KEY_ID=..." >> $GITHUB_ENV  (lay tu secrets)
-        #        echo "AWS_SECRET_ACCESS_KEY=..." >> $GITHUB_ENV
-        # Azure: echo "AZURE_STORAGE_CONNECTION_STRING=..." >> $GITHUB_ENV
+        # Configure AWS/OCI S3 credentials for DVC and boto3
         run: |
-          # <dien code o day>
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
       - name: Pull data with DVC
         # TODO 3: Pull cac file du lieu can thiet tu cloud storage bang lenh dvc pull.
         #         Chi pull train_phase1.csv va eval.csv (khong can train_phase2.csv).
-        run: # <dien lenh o day>
+        run: dvc pull data/train_phase1.csv.dvc data/eval.csv.dvc
 
       - name: Train model
         run: python src/train.py
@@ -84,15 +80,22 @@ jobs:
         #   ACC=$(python -c "import json; d=json.load(open('outputs/metrics.json')); print(d['accuracy'])")
         #   echo "accuracy=$ACC" >> $GITHUB_OUTPUT
         run: |
-          # <dien code o day>
+          ACC=$(python -c "import json; d=json.load(open('outputs/metrics.json')); print(d['accuracy'])")
+          echo "accuracy=$ACC" >> $GITHUB_OUTPUT
 
       - name: Upload model to Cloud Storage
-        # TODO 5: Su dung cloud SDK de upload models/model.pkl len
-        #         <bucket>/models/latest/model.pkl.
-        #         Ten bucket lay tu secret CLOUD_BUCKET.
+        env:
+          CLOUD_BUCKET: ${{ secrets.CLOUD_BUCKET }}
+          AWS_S3_ENDPOINT_URL: ${{ secrets.AWS_S3_ENDPOINT_URL }}
         run: |
           python - <<'EOF'
-          # <dien code Python o day>
+          import os
+          import boto3
+          bucket_name = os.environ["CLOUD_BUCKET"]
+          endpoint_url = os.environ.get("AWS_S3_ENDPOINT_URL")
+          s3 = boto3.client('s3', endpoint_url=endpoint_url)
+          s3.upload_file("models/model.pkl", bucket_name, "models/latest/model.pkl")
+          print(f"Uploaded model.pkl to OCI storage bucket: {bucket_name}")
           EOF
 
       - name: Save metrics as artifact
@@ -126,7 +129,10 @@ jobs:
         #   print("PASSED: dang trien khai model.")
         run: |
           python - <<'EOF'
-          # <dien code Python o day>
+          acc = float("${{ needs.train.outputs.accuracy }}")
+          if acc < 0.70:
+              raise SystemExit(f"FAILED: accuracy {acc:.4f} < 0.70. Huy deploy.")
+          print(f"PASSED: accuracy {acc:.4f} >= 0.70. Ready to deploy.")
           EOF
 
 
@@ -156,4 +162,6 @@ jobs:
             #   sudo systemctl restart mlops-serve
             #   sleep 5
             #   curl -sf http://localhost:8000/health && echo "Health check passed." || exit 1
-            # <dien lenh bash o day>
+            sudo systemctl restart mlops-serve
+            sleep 5
+            curl -sf http://localhost:8000/health && echo "Health check passed." || exit 1

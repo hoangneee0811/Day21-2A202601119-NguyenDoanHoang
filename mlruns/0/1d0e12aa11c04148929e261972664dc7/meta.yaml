@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/laragon/www/Day21Vinuni/Day21-2A202601119-NguyenDoanHoang/mlruns/0/1d0e12aa11c04148929e261972664dc7/artifacts
+end_time: 1787285449164
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 1d0e12aa11c04148929e261972664dc7
+run_name: resilient-bee-246
+run_uuid: 1d0e12aa11c04148929e261972664dc7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1787285446004
+status: 3
+tags: []
+user_id: hoang
