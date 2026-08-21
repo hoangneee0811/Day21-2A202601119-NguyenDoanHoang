@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import List
 import boto3
 import joblib
 import os
@@ -33,7 +34,7 @@ model = joblib.load(MODEL_PATH)
 
 
 class PredictRequest(BaseModel):
-    features: list[float]
+    features: List[float]
 
 
 @app.get("/health")
